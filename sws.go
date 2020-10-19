@@ -86,7 +86,8 @@ var upgrader = websocket.Upgrader{
 func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return
 	}
 	out1Clients[ws] = w
 	log.Printf("WebSocket connection created: %s", r.RemoteAddr)
@@ -95,7 +96,8 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 func webSocket2Handler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return
 	}
 	out2Clients[ws] = w
 	log.Printf("WebSocket - Type 2 - connection created: %s", r.RemoteAddr)
