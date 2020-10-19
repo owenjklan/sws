@@ -18,7 +18,8 @@ var wg sync.WaitGroup
 var renderWaitGroup sync.WaitGroup
 
 // Tracking web socket connections
-var clients = make(map[*websocket.Conn]io.Writer)
+var out1Clients = make(map[*websocket.Conn]io.Writer)
+var out2Clients = make(map[*websocket.Conn]io.Writer)
 
 var LOG_FILE_NAME string = "sws.log"
 var BIND_ADDRESS string = ":8888"
@@ -28,20 +29,40 @@ func Output() {
 	for {
     	time.Sleep(2 * time.Second)
 
-		// Iterate over websocket clients
-		for clientSocket, _ := range clients {
+		// Iterate over websocket out1Clients
+		for clientSocket, _ := range out1Clients {
 			write_err := clientSocket.WriteMessage(
 				websocket.TextMessage,
 				[]byte(fmt.Sprintf("Current Unix Time: %v\n", time.Now().Unix())))
 			if write_err != nil {
 			    log.Printf("Websocket error: %s", write_err)
 			    clientSocket.Close()
-			    delete(clients, clientSocket)
+			    delete(out1Clients, clientSocket)
 			}
 		}
 	}
 }
 
+
+func Output2() {
+	var runningTime int = 0
+
+	for {
+    	time.Sleep(10 * time.Second)
+    	runningTime += 10
+		// Iterate over websocket clients
+		for clientSocket, _ := range out2Clients {
+			write_err := clientSocket.WriteMessage(
+				websocket.TextMessage,
+				[]byte(fmt.Sprintf("run time: %d", runningTime)))
+			if write_err != nil {
+			    log.Printf("Websocket error: %s", write_err)
+			    clientSocket.Close()
+			    delete(out2Clients, clientSocket)
+			}
+		}
+	}
+}
 
 // "index view" handler
 func basePathHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +88,17 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	clients[ws] = w
+	out1Clients[ws] = w
 	log.Printf("WebSocket connection created: %s", r.RemoteAddr)
+}
+
+func webSocket2Handler(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	out2Clients[ws] = w
+	log.Printf("WebSocket - Type 2 - connection created: %s", r.RemoteAddr)
 }
 
 func setupLogFileOrDie() {
@@ -96,9 +126,11 @@ func main() {
 
 	http.HandleFunc("/", basePathHandler)
 	http.HandleFunc("/ws", webSocketHandler)
+	http.HandleFunc("/notifications", webSocket2Handler)
 	log.Printf("Starting web service, listening on %s\n", BIND_ADDRESS)
 
 	go Output()
+	go Output2()
 
 	log.Printf("%q", http.ListenAndServe(BIND_ADDRESS, nil))
 }
