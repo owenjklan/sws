@@ -1,0 +1,18 @@
+2020/10/19 20:20:29 -- sws started --
+2020/10/19 20:20:29 Starting web service, listening on :8888
+2020/10/19 20:20:43 WebSocket connection created: [::1]:39388
+2020/10/19 20:22:10 WebSocket connection created: [::1]:40078
+2020/10/19 20:22:11 WebSocket connection created: [::1]:40088
+2020/10/19 20:22:12 WebSocket connection created: [::1]:40098
+2020/10/19 20:22:13 WebSocket connection created: [::1]:40108
+2020/10/19 20:22:13 WebSocket connection created: [::1]:40110
+2020/10/19 20:22:13 Websocket error: write tcp [::1]:8888->[::1]:39388: write: broken pipe
+2020/10/19 20:22:13 Websocket error: write tcp [::1]:8888->[::1]:40078: write: broken pipe
+2020/10/19 20:22:13 WebSocket connection created: [::1]:40120
+2020/10/19 20:22:14 WebSocket connection created: [::1]:40122
+2020/10/19 20:22:15 Websocket error: write tcp [::1]:8888->[::1]:40088: write: broken pipe
+2020/10/19 20:22:15 Websocket error: write tcp [::1]:8888->[::1]:40098: write: broken pipe
+2020/10/19 20:22:15 Websocket error: write tcp [::1]:8888->[::1]:40108: write: broken pipe
+2020/10/19 20:22:17 Websocket error: write tcp [::1]:8888->[::1]:40110: write: broken pipe
+2020/10/19 20:22:17 Websocket error: write tcp [::1]:8888->[::1]:40120: write: broken pipe
+2020/10/19 20:43:13 Websocket error: write tcp [::1]:8888->[::1]:40122: write: broken pipe
