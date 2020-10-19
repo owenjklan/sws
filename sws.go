@@ -86,7 +86,7 @@ var upgrader = websocket.Upgrader{
 func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print("WS1 Upgrade: %s", err)
+		log.Printf("WS1 Upgrade: %s", err)
 		return
 	}
 	out1Clients[ws] = w
@@ -96,7 +96,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 func webSocket2Handler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print("WS2 Upgrade: %s", err)
+		log.Printf("WS2 Upgrade: %s", err)
 		return
 	}
 	out2Clients[ws] = w
