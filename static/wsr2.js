@@ -1,8 +1,8 @@
 var hostname = window.location.hostname;
 var host = window.location.host;
 var port = window.location.port;
-var wsAddr1 = 'ws://' + host + '/ws';
-var wsAddr2 = 'ws://' + hostname + ":" + (port + 10) + '/notifications';
+var wsAddr1 = 'ws://' + hostname + ":" + port + '/ws';
+var wsAddr2 = 'ws://' + hostname + ":" + (parseInt(port) + 10) + '/notifications';
 
 var webSocket1 = new WebSocket(wsAddr1);
 var webSocket2 = new WebSocket(wsAddr2);

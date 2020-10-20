@@ -117,6 +117,22 @@ func setupLogFileOrDie() {
 	log.Print("-- sws started --")
 }
 
+// Second endpoint, to explicitly test WebSockets connections that want to
+// go to a different port. How to pull this off was determined largely with
+// the help of: https://gist.github.com/filewalkwithme/24363472e7424bbe7028
+type wsNotifyHandler struct {
+}
+
+func (m *wsNotifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("WS2 Upgrade: %s", err)
+		return
+	}
+	out2Clients[ws] = w
+	log.Printf("WebSocket - Type 2 - connection created: %s", r.RemoteAddr)    
+}
+
 func main() {
 	defer fmt.Print("Exiting")
 	setupLogFileOrDie()
@@ -142,7 +158,7 @@ func main() {
 	// Spawn secondary server in go-routine. The http.ListenAndServe call
 	// will block.
 	go func() {
-		log.Fatal(http.ListenAndServe(ws2BindAddr, nil))
+		log.Fatal(http.ListenAndServe(ws2BindAddr, &wsNotifyHandler{}))
 	}()
 
 	log.Printf("%q", http.ListenAndServe(ws1BindAddr, nil))
