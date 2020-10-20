@@ -22,7 +22,7 @@ var out1Clients = make(map[*websocket.Conn]io.Writer)
 var out2Clients = make(map[*websocket.Conn]io.Writer)
 
 var LOG_FILE_NAME string = "sws.log"
-var BIND_ADDRESS string = ":8888"
+var BIND_PORT_BASE int16 = 8888
 
 
 func Output() {
@@ -121,18 +121,29 @@ func main() {
 	defer fmt.Print("Exiting")
 	setupLogFileOrDie()
 
-//  We want the file server to handle paths for, well, static files
-//  Think: javascript, CSS, images.
+	//  We want the file server to handle paths for, well, static files
+	//  Think: javascript, CSS, images.
 	fs := http.FileServer(http.Dir("."))
 	http.Handle("/static/", fs)
 
+	// Serve second Websockets endpoint on Binding port + 10
 	http.HandleFunc("/", basePathHandler)
 	http.HandleFunc("/ws", webSocketHandler)
 	http.HandleFunc("/notifications", webSocket2Handler)
-	log.Printf("Starting web service, listening on %s\n", BIND_ADDRESS)
+
+	ws1BindAddr := fmt.Sprintf(":%d", BIND_PORT_BASE)
+	ws2BindAddr := fmt.Sprintf(":%d", BIND_PORT_BASE + 10)
+
+	log.Printf("Starting base web service, listening on %s\n", ws1BindAddr)
 
 	go Output()
 	go Output2()
 
-	log.Printf("%q", http.ListenAndServe(BIND_ADDRESS, nil))
+	// Spawn secondary server in go-routine. The http.ListenAndServe call
+	// will block.
+	go func() {
+		log.Fatal(http.ListenAndServe(ws2BindAddr, nil))
+	}()
+
+	log.Printf("%q", http.ListenAndServe(ws1BindAddr, nil))
 }
